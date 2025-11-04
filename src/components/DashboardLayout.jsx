@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { 
-  FaHome, 
-  FaUser, 
-  FaCalendarAlt, 
-  FaPrescriptionBottleAlt, 
+import NotificationBell from './NotificationBell';
+import {
+  FaHome,
+  FaUser,
+  FaCalendarAlt,
+  FaPrescriptionBottleAlt,
   FaFileAlt,
   FaBell,
   FaStar,
@@ -88,8 +89,11 @@ const DashboardLayout = ({ children }) => {
               </Link>
             </div>
 
-            {/* User Info */}
+            {/* User Info & Notifications */}
             <div className="flex items-center space-x-4">
+              {/* Notification Bell */}
+              <NotificationBell />
+
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-semibold text-neutral-900">
                   {user?.firstName} {user?.lastName}

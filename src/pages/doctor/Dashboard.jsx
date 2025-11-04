@@ -22,7 +22,13 @@ const DoctorDashboard = () => {
   const fetchStats = async () => {
     try {
       const response = await doctorAPI.getStats();
-      setStats(response.data.data || stats);
+      const data = response.data.data || {};
+      setStats({
+        todayAppointments: data.todayAppointments || 0,
+        totalPatients: data.totalPatients || 0,
+        averageRating: data.averageRating || 0,
+        totalEarnings: data.totalEarnings || 0
+      });
     } catch (error) {
       console.error('Error fetching stats:', error);
     } finally {

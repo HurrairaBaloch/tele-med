@@ -3,9 +3,10 @@ import axios from 'axios';
 /**
  * Axios instance with base configuration
  * Automatically includes auth token in requests
+ * Uses environment variable for production or proxy for development
  */
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -55,6 +56,7 @@ export const authAPI = {
 // ============================================
 export const patientAPI = {
   getProfile: () => api.get('/patients/profile'),
+  getById: (id) => api.get(`/patients/${id}`),
   updateProfile: (data) => api.put('/patients/profile', data),
   getAppointments: (params) => api.get('/patients/appointments', { params }),
   getPrescriptions: (params) => api.get('/patients/prescriptions', { params }),
@@ -96,6 +98,7 @@ export const appointmentAPI = {
 export const consultationAPI = {
   create: (data) => api.post('/consultations', data),
   getById: (id) => api.get(`/consultations/${id}`),
+  getByAppointmentId: (appointmentId) => api.get(`/consultations/appointment/${appointmentId}`),
   update: (id, data) => api.put(`/consultations/${id}`, data),
   end: (id) => api.put(`/consultations/${id}/end`),
   getHistory: (patientId) => api.get(`/consultations/history/${patientId}`),
