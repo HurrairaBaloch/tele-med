@@ -64,8 +64,12 @@ export default {
         info: '#3B82F6',
       },
       fontFamily: {
-        sans: ['Poppins', 'sans-serif'],
-        body: ['Roboto', 'sans-serif'],
+        sans: ['PT Sans', 'Barlow', 'sans-serif'],
+        body: ['PT Sans', 'Barlow', 'sans-serif'],
+        heading: ['Outfit', 'Barlow', 'sans-serif'],
+        outfit: ['Outfit', 'sans-serif'],
+        barlow: ['Barlow', 'sans-serif'],
+        'pt-sans': ['PT Sans', 'sans-serif'],
       },
       boxShadow: {
         'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',

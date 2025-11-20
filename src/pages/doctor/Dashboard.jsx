@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaUsers, FaStar, FaDollarSign } from 'react-icons/fa';
+import { FaCalendarAlt, FaUsers, FaStar, FaDollarSign, FaClock, FaCheckCircle, FaGlobe, FaShieldAlt } from 'react-icons/fa';
 import DashboardLayout from '../../components/DashboardLayout';
 import { doctorAPI } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -122,6 +122,68 @@ const DoctorDashboard = () => {
           <h2 className="text-xl font-semibold text-neutral-900 mb-4">Today's Schedule</h2>
           <p className="text-neutral-600">Your appointments will appear here</p>
         </div>
+
+        {/* Healthcare Benefits Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="card"
+        >
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-2">
+              Healthcare That Fits Your Life
+            </h2>
+            <p className="text-neutral-600">
+              Experience the future of healthcare with our comprehensive telemedicine platform designed for modern living
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                title: 'Save Time',
+                description: 'No more waiting rooms or travel time. Get care when you need it.',
+                icon: <FaClock className="text-2xl text-primary-600" />,
+                iconBg: 'bg-primary-100'
+              },
+              {
+                title: 'Save Money',
+                description: 'Affordable consultations without hidden fees or insurance hassles.',
+                icon: <FaCheckCircle className="text-2xl text-secondary-600" />,
+                iconBg: 'bg-secondary-100'
+              },
+              {
+                title: 'Better Access',
+                description: 'Connect with specialists who may not be available in your area.',
+                icon: <FaGlobe className="text-2xl text-accent-600" />,
+                iconBg: 'bg-accent-100'
+              },
+              {
+                title: 'Quality Care',
+                description: 'All doctors are board-certified and thoroughly vetted.',
+                icon: <FaShieldAlt className="text-2xl text-primary-600" />,
+                iconBg: 'bg-primary-100'
+              }
+            ].map((benefit, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                className="card bg-white text-center hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="mb-6 flex justify-center">
+                  <div className={`w-20 h-20 ${benefit.iconBg} rounded-full flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300`}>
+                    {benefit.icon}
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-neutral-900 mb-3">{benefit.title}</h3>
+                <p className="text-neutral-600 leading-relaxed">{benefit.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </DashboardLayout>
   );

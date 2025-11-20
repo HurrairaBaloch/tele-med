@@ -10,12 +10,12 @@
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'PT Sans', 'Barlow', sans-serif;
   @apply bg-neutral-50 text-neutral-900;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Outfit', 'Barlow', sans-serif;
 }
 
 /* Custom Scrollbar */

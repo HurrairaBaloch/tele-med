@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 /**
@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
  */
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, loading, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   // Show loading spinner while checking authentication
   if (loading) {
@@ -53,7 +54,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
             Your doctor account is currently under review. You will be notified once your account is approved by the admin.
           </p>
           <button
-            onClick={() => window.location.href = '/'}
+            onClick={() => navigate('/', { replace: true })}
             className="btn-primary w-full"
           >
             Go to Home

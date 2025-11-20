@@ -1,11 +1,10 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion, useInView } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules';
+import { Autoplay, Pagination, EffectFade } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 import {
   FaUserMd,
@@ -28,6 +27,58 @@ import {
 } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useAuth } from '../contexts/AuthContext';
+
+
+const CountUp = ({ end, suffix = '', duration = 3.5, decimals = 0 }) => {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+
+  useEffect(() => {
+    if (!isInView) return;
+
+    let startTime = null;
+    const animate = (currentTime) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / (duration * 1000), 1);
+      
+      // Easing function for smooth animation
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      let currentCount = easeOutQuart * end;
+      
+      // Round based on decimals
+      if (decimals === 0) {
+        currentCount = Math.floor(currentCount);
+      } else {
+        currentCount = Math.round(currentCount * Math.pow(10, decimals)) / Math.pow(10, decimals);
+      }
+      
+      setCount(currentCount);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setCount(end);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [isInView, end, duration, decimals]);
+
+  const formatNumber = (num) => {
+    if (decimals > 0) {
+      return num.toFixed(decimals);
+    }
+    return num.toLocaleString();
+  };
+
+  return (
+    <span ref={ref}>
+      {formatNumber(count)}{suffix}
+    </span>
+  );
+};
 
 /**
  * Enhanced Landing Page
@@ -35,6 +86,30 @@ import Footer from '../components/Footer';
  */
 const LandingPage = () => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const navigate = useNavigate();
+  const { isAuthenticated, user, loading } = useAuth();
+
+  // Redirect authenticated users to their dashboard (except unapproved doctors)
+  useEffect(() => {
+    if (!loading && isAuthenticated && user) {
+      // Allow unapproved doctors to stay on home page
+      if (user.role === 'doctor' && !user.isApproved) {
+        return; // Don't redirect unapproved doctors
+      }
+      
+      const redirectPath = user.role === 'patient' 
+        ? '/patient/dashboard' 
+        : user.role === 'doctor' 
+        ? '/doctor/dashboard' 
+        : user.role === 'admin' 
+        ? '/admin/dashboard' 
+        : null;
+      
+      if (redirectPath) {
+        navigate(redirectPath, { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, loading, navigate]);
 
   /**
    * Hero carousel slides with medical imagery themes
@@ -124,10 +199,10 @@ const LandingPage = () => {
   ];
 
   const stats = [
-    { number: '10,000+', label: 'Happy Patients', icon: <FaUserMd /> },
-    { number: '500+', label: 'Expert Doctors', icon: <FaStethoscope /> },
-    { number: '50,000+', label: 'Consultations', icon: <FaVideo /> },
-    { number: '4.9/5', label: 'Average Rating', icon: <FaStar /> }
+    { number: 10000, suffix: '+', label: 'Happy Patients', icon: <FaUserMd />, decimals: 0 },
+    { number: 500, suffix: '+', label: 'Expert Doctors', icon: <FaStethoscope />, decimals: 0 },
+    { number: 50000, suffix: '+', label: 'Consultations', icon: <FaVideo />, decimals: 0 },
+    { number: 4.9, suffix: '/5', label: 'Average Rating', icon: <FaStar />, decimals: 1 }
   ];
 
   const testimonials = [
@@ -194,22 +269,26 @@ const LandingPage = () => {
     {
       title: 'Save Time',
       description: 'No more waiting rooms or travel time. Get care when you need it.',
-      icon: <FaClock className="text-5xl text-primary-500" />
+      icon: <FaClock className="text-2xl text-white" />,
+      iconBg: 'bg-primary-500'
     },
     {
       title: 'Save Money',
       description: 'Affordable consultations without hidden fees or insurance hassles.',
-      icon: <FaCheckCircle className="text-5xl text-secondary-500" />
+      icon: <FaCheckCircle className="text-2xl text-white" />,
+      iconBg: 'bg-secondary-500'
     },
     {
       title: 'Better Access',
       description: 'Connect with specialists who may not be available in your area.',
-      icon: <FaGlobe className="text-5xl text-accent-500" />
+      icon: <FaGlobe className="text-2xl text-white" />,
+      iconBg: 'bg-accent-500'
     },
     {
       title: 'Quality Care',
       description: 'All doctors are board-certified and thoroughly vetted.',
-      icon: <FaShieldAlt className="text-5xl text-primary-500" />
+      icon: <FaShieldAlt className="text-2xl text-white" />,
+      iconBg: 'bg-primary-500'
     }
   ];
 
@@ -220,7 +299,7 @@ const LandingPage = () => {
       {/* Enhanced Hero Section with Carousel */}
       <section className="relative overflow-hidden">
         <Swiper
-          modules={[Autoplay, Pagination, Navigation, EffectFade]}
+          modules={[Autoplay, Pagination, EffectFade]}
           effect="fade"
           autoplay={{
             delay: 5000,
@@ -230,7 +309,7 @@ const LandingPage = () => {
             clickable: true,
             bulletActiveClass: 'swiper-pagination-bullet-active bg-white',
           }}
-          navigation={true}
+          navigation={false}
           loop={true}
           onSlideChange={(swiper) => setActiveSlide(swiper.realIndex)}
           className="hero-swiper"
@@ -344,7 +423,14 @@ const LandingPage = () => {
                   <div className="flex justify-center mb-3 text-primary-500 text-4xl">
                     {stat.icon}
                   </div>
-                  <h3 className="text-4xl font-bold text-primary-600 mb-2">{stat.number}</h3>
+                  <h3 className="text-4xl font-bold text-primary-600 mb-2">
+                    <CountUp 
+                      end={stat.number} 
+                      suffix={stat.suffix} 
+                      duration={3.5}
+                      decimals={stat.decimals}
+                    />
+                  </h3>
                   <p className="text-neutral-600 font-medium">{stat.label}</p>
                 </div>
               ))}
@@ -369,7 +455,14 @@ const LandingPage = () => {
                 <div className="flex justify-center mb-3 text-primary-500 text-3xl">
                   {stat.icon}
                 </div>
-                <h3 className="text-3xl font-bold text-primary-600 mb-2">{stat.number}</h3>
+                <h3 className="text-3xl font-bold text-primary-600 mb-2">
+                  <CountUp 
+                    end={stat.number} 
+                    suffix={stat.suffix} 
+                    duration={2}
+                    decimals={stat.decimals}
+                  />
+                </h3>
                 <p className="text-neutral-600 font-medium">{stat.label}</p>
               </motion.div>
             ))}
@@ -398,7 +491,7 @@ const LandingPage = () => {
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {benefits.map((benefit, index) => (
               <motion.div
                 key={index}
@@ -406,13 +499,15 @@ const LandingPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="text-center group"
+                className="card bg-white text-center border-2 border-transparent hover:border-primary-300 hover:bg-primary-50 transition-all duration-300 group"
               >
-                <div className="mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                  {benefit.icon}
+                <div className="mb-6 flex justify-center">
+                  <div className={`w-16 h-16 ${benefit.iconBg} rounded-full flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300`}>
+                    {benefit.icon}
+                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-neutral-900 mb-3">{benefit.title}</h3>
-                <p className="text-neutral-600">{benefit.description}</p>
+                <p className="text-neutral-600 leading-relaxed">{benefit.description}</p>
               </motion.div>
             ))}
           </div>

@@ -18,7 +18,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="bg-primary-100 md:bg-white shadow-md sticky top-0 z-50">
       <div className="container-custom">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -31,15 +31,19 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/about" className="text-neutral-700 hover:text-primary-500 transition-colors">
-              About
-            </Link>
-            <Link to="/contact" className="text-neutral-700 hover:text-primary-500 transition-colors">
-              Contact
-            </Link>
-            <Link to="/faq" className="text-neutral-700 hover:text-primary-500 transition-colors">
-              FAQ
-            </Link>
+            {!isAuthenticated && (
+              <>
+                <Link to="/about" className="text-neutral-700 hover:text-primary-500 transition-colors">
+                  About
+                </Link>
+                <Link to="/contact" className="text-neutral-700 hover:text-primary-500 transition-colors">
+                  Contact
+                </Link>
+                <Link to="/faq" className="text-neutral-700 hover:text-primary-500 transition-colors">
+                  FAQ
+                </Link>
+              </>
+            )}
 
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
@@ -83,27 +87,31 @@ const Navbar = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-neutral-200">
             <div className="flex flex-col space-y-4">
-              <Link
-                to="/about"
-                className="text-neutral-700 hover:text-primary-500 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                to="/contact"
-                className="text-neutral-700 hover:text-primary-500 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Contact
-              </Link>
-              <Link
-                to="/faq"
-                className="text-neutral-700 hover:text-primary-500 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                FAQ
-              </Link>
+              {!isAuthenticated && (
+                <>
+                  <Link
+                    to="/about"
+                    className="text-neutral-700 hover:text-primary-500 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    About
+                  </Link>
+                  <Link
+                    to="/contact"
+                    className="text-neutral-700 hover:text-primary-500 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Contact
+                  </Link>
+                  <Link
+                    to="/faq"
+                    className="text-neutral-700 hover:text-primary-500 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    FAQ
+                  </Link>
+                </>
+              )}
 
               {isAuthenticated ? (
                 <>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import { FaUsers, FaUserMd, FaCalendarAlt, FaVideo } from 'react-icons/fa';
@@ -10,6 +11,7 @@ import { adminAPI } from '../../services/api';
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
 
@@ -39,6 +41,37 @@ const AdminDashboard = () => {
   }
 
   const stats = dashboardData?.overview || {};
+
+  const statCards = [
+    {
+      title: 'Total Patients',
+      value: stats.totalPatients || 0,
+      icon: <FaUsers className="text-5xl text-primary-200" />,
+      className: 'bg-gradient-to-br from-primary-500 to-primary-600 text-white',
+      route: '/admin/users?tab=patients',
+    },
+    {
+      title: 'Total Doctors',
+      value: stats.totalDoctors || 0,
+      icon: <FaUserMd className="text-5xl text-secondary-200" />,
+      className: 'bg-gradient-to-br from-secondary-500 to-secondary-600 text-white',
+      route: '/admin/users?tab=doctors',
+    },
+    {
+      title: 'Total Appointments',
+      value: stats.totalAppointments || 0,
+      icon: <FaCalendarAlt className="text-5xl text-accent-200" />,
+      className: 'bg-gradient-to-br from-accent-400 to-accent-500 text-white',
+      route: '/admin/monitoring',
+    },
+    {
+      title: 'Consultations',
+      value: stats.totalConsultations || 0,
+      icon: <FaVideo className="text-5xl text-green-200" />,
+      className: 'bg-gradient-to-br from-success to-green-600 text-white',
+      route: '/admin/reports',
+    },
+  ];
 
   // Chart data
   const appointmentStatusData = {
@@ -71,65 +104,25 @@ const AdminDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="card bg-gradient-to-br from-primary-500 to-primary-600 text-white"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-primary-100 mb-1">Total Patients</p>
-                <h3 className="text-4xl font-bold">{stats.totalPatients || 0}</h3>
+          {statCards.map((card, index) => (
+            <motion.button
+              key={card.title}
+              type="button"
+              onClick={() => navigate(card.route)}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * (index + 1) }}
+              className={`w-full text-left card ${card.className} focus:outline-none focus:ring-2 focus:ring-white/70`}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white/80 mb-1">{card.title}</p>
+                  <h3 className="text-4xl font-bold">{card.value}</h3>
+                </div>
+                {card.icon}
               </div>
-              <FaUsers className="text-5xl text-primary-200" />
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="card bg-gradient-to-br from-secondary-500 to-secondary-600 text-white"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-secondary-100 mb-1">Total Doctors</p>
-                <h3 className="text-4xl font-bold">{stats.totalDoctors || 0}</h3>
-              </div>
-              <FaUserMd className="text-5xl text-secondary-200" />
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="card bg-gradient-to-br from-accent-400 to-accent-500 text-white"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-accent-100 mb-1">Total Appointments</p>
-                <h3 className="text-4xl font-bold">{stats.totalAppointments || 0}</h3>
-              </div>
-              <FaCalendarAlt className="text-5xl text-accent-200" />
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="card bg-gradient-to-br from-success to-green-600 text-white"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-100 mb-1">Consultations</p>
-                <h3 className="text-4xl font-bold">{stats.totalConsultations || 0}</h3>
-              </div>
-              <FaVideo className="text-5xl text-green-200" />
-            </div>
-          </motion.div>
+            </motion.button>
+          ))}
         </div>
 
         {/* Charts */}
@@ -168,7 +161,12 @@ const AdminDashboard = () => {
                 <h3 className="text-lg font-semibold text-neutral-900 mb-1">Pending Doctor Approvals</h3>
                 <p className="text-neutral-600">{stats.pendingDoctors} doctors waiting for approval</p>
               </div>
-              <button className="btn-primary">Review Now</button>
+              <button
+                onClick={() => navigate('/admin/users?tab=pending')}
+                className="btn-primary"
+              >
+                Review Now
+              </button>
             </div>
           </motion.div>
         )}

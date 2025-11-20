@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FaUserMd, FaUser, FaEnvelope, FaLock, FaPhone, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
+import toast from 'react-hot-toast';
 
 /**
  * Register Page
@@ -24,7 +25,8 @@ const RegisterPage = () => {
     phone: '',
     specialization: '',
     medicalLicenseNumber: '',
-    yearsOfExperience: ''
+    yearsOfExperience: '',
+    consultationFee: ''
   });
 
   // Redirect if already logged in
@@ -66,12 +68,13 @@ const RegisterPage = () => {
       registrationData.specialization = formData.specialization;
       registrationData.medicalLicenseNumber = formData.medicalLicenseNumber;
       registrationData.yearsOfExperience = parseInt(formData.yearsOfExperience);
+      registrationData.consultationFee = parseFloat(formData.consultationFee);
     }
 
     const result = await register(registrationData);
 
     if (result.success) {
-      navigate(getRedirectPath());
+      navigate('/login');
     }
 
     setLoading(false);
@@ -264,6 +267,28 @@ const RegisterPage = () => {
                         className="input-field"
                         placeholder="5"
                         min="0"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Consultation Fee ($)
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span className="text-neutral-400">$</span>
+                      </div>
+                      <input
+                        type="number"
+                        name="consultationFee"
+                        value={formData.consultationFee}
+                        onChange={handleChange}
+                        className="input-field pl-8"
+                        placeholder="100.00"
+                        min="0"
+                        step="0.01"
                         required
                       />
                     </div>
